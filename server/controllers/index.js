@@ -3,6 +3,7 @@ const models = require('../models');
 
 // get the Cat model
 const Cat = models.Cat.CatModel;
+const Dog = models.Dog.DogModel;
 
 // default fake data so that we have something to work with until we make a real Cat
 const defaultData = {
@@ -249,6 +250,57 @@ const notFound = (req, res) => {
   });
 };
 
+
+
+
+
+const ageDog = (req, res) => {
+  if (!req.query.locatename) {
+    return res.status(400).json({ error: 'Name is required to perform a search' });
+  }
+
+  return Dog.findByName(req.query.locatename, (err, doc) => {
+    if (err) {
+      return res.status(500).json({ err });
+    }
+
+    // if no matches, let them know
+    // (does not necessarily have to be an error since technically it worked correctly)
+    if (!doc) {
+      return res.json({ error: 'No dogs found' });
+    }
+
+    doc.set(age = doc.age + 1);
+    return res.json({ name: doc.name, breed: doc.breed, age: doc.age });
+  });
+};
+
+const createDog = (req, res) => {
+  if (!req.body.createname || !req.body.breed || !req.body.age) {
+    return res.status(400).json({ error: 'name, breed and age are all required' });
+  }
+
+  const dogData = {
+    name : req.body.createname,
+    breed: req.body.breed,
+    age: req.body.age,
+  };
+
+  const newDog = new Dog(dogData);
+  const savePromise = newDog.save();
+
+  savePromise.then(() => {
+    lastAdded = newDog;
+    // return success
+    res.json({ name: lastAdded.name, breed: lastAdded.breed, age: lastAdded.age });
+  });
+
+  // if error, return it
+  savePromise.catch((err) => res.status(500).json({ err }));
+
+  return res;
+};
+
 // export the relevant public controller functions
 module.exports = {
   index: hostIndex,
@@ -261,4 +313,6 @@ module.exports = {
   updateLast,
   searchName,
   notFound,
+  createDog,
+  ageDog
 };
