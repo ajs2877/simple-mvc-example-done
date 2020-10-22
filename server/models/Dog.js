@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 let DogModel = {};
 
 const DogSchema = new mongoose.Schema({
@@ -36,7 +37,6 @@ DogSchema.statics.findByName = (name, callback) => {
 };
 
 DogModel = mongoose.model('Dog', DogSchema);
-
 
 // export our public properties
 module.exports.DogModel = DogModel;

@@ -46,6 +46,9 @@ const readAllCats = (req, res, callback) => {
   Cat.find(callback).lean();
 };
 
+const readAllDogs = (req, res, callback) => {
+  Dog.find(callback).lean();
+};
 
 // function to find a specific cat on request.
 // Express functions always receive the request and the response.
@@ -106,13 +109,25 @@ const hostPage2 = (req, res) => {
 // controller functions in Express receive the full HTTP request
 // and a pre-filled out response object to send
 const hostPage3 = (req, res) => {
-    // res.render takes a name of a page to render.
-    // These must be in the folder you specified as views in your main app.js file
-    // Additionally, you don't need .jade because you registered the file type
-    // in the app.js as jade. Calling res.render('index')
-    // actually calls index.jade. A second parameter of JSON can be passed
-    // into the jade to be used as variables with #{varName}
+  // res.render takes a name of a page to render.
+  // These must be in the folder you specified as views in your main app.js file
+  // Additionally, you don't need .jade because you registered the file type
+  // in the app.js as jade. Calling res.render('index')
+  // actually calls index.jade. A second parameter of JSON can be passed
+  // into the jade to be used as variables with #{varName}
   res.render('page3');
+};
+
+const hostPage4 = (req, res) => {
+  const callback = (err, docs) => {
+    if (err) {
+      return res.status(500).json({ err });
+    }
+
+    // return success
+    return res.render('page4', { dogs: docs });
+  };
+  readAllDogs(req, res, callback);
 };
 
 // function to handle get request to send the name
@@ -168,7 +183,6 @@ const setName = (req, res) => {
 
   return res;
 };
-
 
 // function to handle requests search for a name and return the object
 // controller functions in Express receive the full HTTP request
@@ -250,10 +264,6 @@ const notFound = (req, res) => {
   });
 };
 
-
-
-
-
 const ageDog = (req, res) => {
   if (!req.query.locatename) {
     return res.status(400).json({ error: 'Name is required to perform a search' });
@@ -270,8 +280,13 @@ const ageDog = (req, res) => {
       return res.json({ error: 'No dogs found' });
     }
 
-    doc.set(age = doc.age + 1);
-    return res.json({ name: doc.name, breed: doc.breed, age: doc.age });
+    // like we are now nesting methods.
+    // this is similar to the save promise but we just update and save right away
+    doc.age += 1;
+    doc.save((err, updatedDoc) => {
+      if (err) return handleError(err);
+      return res.json({ name: updatedDoc.name, breed: updatedDoc.breed, age: updatedDoc.age });
+    });
   });
 };
 
@@ -281,7 +296,7 @@ const createDog = (req, res) => {
   }
 
   const dogData = {
-    name : req.body.createname,
+    name: req.body.createname,
     breed: req.body.breed,
     age: req.body.age,
   };
@@ -307,6 +322,7 @@ module.exports = {
   page1: hostPage1,
   page2: hostPage2,
   page3: hostPage3,
+  page4: hostPage4,
   readCat,
   getName,
   setName,
@@ -314,5 +330,5 @@ module.exports = {
   searchName,
   notFound,
   createDog,
-  ageDog
+  ageDog,
 };
