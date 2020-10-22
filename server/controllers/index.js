@@ -282,10 +282,11 @@ const ageDog = (req, res) => {
 
     // like we are now nesting methods.
     // this is similar to the save promise but we just update and save right away
-    doc.age += 1;
-    doc.save((err, updatedDoc) => {
-      if (err) return handleError(err);
-      return res.json({ name: updatedDoc.name, breed: updatedDoc.breed, age: updatedDoc.age });
+    return Dog.updateOne({ _id: doc.id }, { $set: { age: doc.age + 1 } }, (err2) => {
+      if (err2) {
+        return res.send(err2);
+      }
+      return res.json({ name: doc.name, breed: doc.breed, age: doc.age });
     });
   });
 };
