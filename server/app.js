@@ -25,7 +25,7 @@ const router = require('./router.js');
 // your Config Vars in the Heroku Dashboard > Settings > Config Vars section.
 // otherwise fallback to localhost.
 // The string after mongodb://localhost is the database name. It can be anything you want.
-const dbURL = process.env.MONGODB_URI || 'mongodb://localhost/simpleMVCExample';
+const dbURL = process.env.MONGODB_URI || 'mongodb+srv://asTG:cYbABlBnxeJhXwX30tTc@cluster0.gte8k.mongodb.net/test?authSource=admin&replicaSet=atlas-rkzyyn-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true';
 
 // A number of options for Mongoose to turn on newer features supported by
 // newer version of MongoDB.
